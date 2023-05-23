@@ -140,23 +140,23 @@ void iniciarBD(){
 //
 //}
 //
-//void insertarCliente(Cliente clt) {
-//
-//	char* error = 0;
-//	int rc;
-//
-//	char query[400];
-//	sprintf(query, "INSERT INTO CLIENTE ( DNI_clt, Nombre_clt, Direccion, Tlf_clt, Codigo_ciu, Contrasena_clt) VALUES ('%s', '%s', '%s', '%d', '%d', '%s')", clt.dni, clt.nombre, clt.direccion, clt.telefono, clt.cod_ciudad, clt.contrasena);
-//
-//	rc = sqlite3_exec(db, query, 0, 0, &error);
-//
-//	if (rc == SQLITE_OK) {
-//		printf("Cliente insertado correctamente\n");
-//	} else {
-//		printf("Error al insertar cliente: %s\n", error);
-//	}
-//	        sqlite3_finalize(stmt);
-//	}
+void insertarCliente(char dni[], char nom[] , char dir[], int tlf, int cod_ciu, char * contr) {
+
+	char* error = 0;
+	int rc;
+
+	char query[400];
+	sprintf(query, "INSERT INTO CLIENTE ( DNI_clt, Nombre_clt, Direccion, Tlf_clt, Codigo_ciu, Contrasena_clt) VALUES ('%s', '%s', '%s', '%d', '%d', '%s')", dni, nom, dir, tlf, cod_ciu, contr);
+
+	rc = sqlite3_exec(db, query, 0, 0, &error);
+
+	if (rc == SQLITE_OK) {
+		printf("Cliente insertado correctamente\n");
+	} else {
+		printf("Error al insertar cliente: %s\n", error);
+	}
+	        sqlite3_finalize(stmt);
+	}
 //
 //void insertarPedido(Pedido ped){
 //	    char error = 0;
@@ -276,23 +276,56 @@ void MostrarTrabajadores() {
 //        sqlite3_finalize(stmt);
 //}
 //
-//void ListaProductos() {
-//		char sql[] = "select * from PRODUCTO";
-//
-//			sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
-//			printf("\n");
-//			printf("Mostrando Productos:\n");
-//
-//			do {
-//				result = sqlite3_step(stmt) ;
-//				if (result == SQLITE_ROW) {
-//					printf("Producto -> ID: %i --> (%i€) %s\n", (int) sqlite3_column_int(stmt, 0),(int) sqlite3_column_int(stmt, 4), (char*) sqlite3_column_text(stmt, 1));
-//				}
-//			} while (result == SQLITE_ROW);
-//
-//			sqlite3_finalize(stmt);
-//}
-//
+void ListaProductos() {
+		char sql[] = "select * from PRODUCTO";
+
+			sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+			printf("\n");
+			printf("Mostrando Productos:\n");
+
+			do {
+				result = sqlite3_step(stmt) ;
+				if (result == SQLITE_ROW) {
+					printf("Producto -> ID: %i --> (%i€) %s\n", (int) sqlite3_column_int(stmt, 0),(int) sqlite3_column_int(stmt, 4), (char*) sqlite3_column_text(stmt, 1));
+				}
+			} while (result == SQLITE_ROW);
+
+			sqlite3_finalize(stmt);
+}
+int nProductos() {
+		char sql[] = "select * from PRODUCTO";
+		int cont;
+		cont = 0;
+		sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+
+		do {
+			result = sqlite3_step(stmt) ;
+			if (result == SQLITE_ROW) {
+				cont++;
+			}
+		} while (result == SQLITE_ROW);
+
+		sqlite3_finalize(stmt);
+		return cont;
+}
+Producto* Productos() {
+		int nprod = nProductos();
+		Producto* prods = new Producto[nprod];
+		char sql[] = "select * from PRODUCTO";
+
+			sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+
+			do {
+				result = sqlite3_step(stmt) ;
+				if (result == SQLITE_ROW) {
+
+				}
+			} while (result == SQLITE_ROW);
+
+			sqlite3_finalize(stmt);
+			return prods;
+}
+
 //void ListaAlmacenes() {
 //		char sql[] = "select * from ALMACEN";
 //
@@ -662,26 +695,31 @@ int comprobarUsuario(char usuario[], char contrasena[]) {
 //
 //	return resultado;
 //}
-//int comprobarProducto(int id_prod){
-//	int resultado = 0;
-//
-//	char sql[] = "SELECT * FROM PRODUCTO WHERE ID_prod = ?";
-//
-//	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
-//	sqlite3_bind_int(stmt, 1, id_prod);
-//
-//	result = sqlite3_step(stmt);
-//
-//	if(result == SQLITE_ROW) {
-//		resultado = 1;
-//	} else {
-//		resultado = 0;
-//	}
-//
-//	sqlite3_finalize(stmt);
-//
-//	return resultado;
-//}
+Producto comprobarProducto(int id_prod){
+	Producto prod;
+
+	char sql[] = "SELECT * FROM PRODUCTO WHERE ID_prod = ?";
+
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+	sqlite3_bind_int(stmt, 1, id_prod);
+
+	result = sqlite3_step(stmt);
+
+	if(result == SQLITE_ROW) {
+		prod.id_prod = id_prod;
+		prod.nombre = (char*) sqlite3_column_text(stmt, 1);
+		prod.descripcion =(char*) sqlite3_column_text(stmt, 2);
+		prod.cod_cat = (int) sqlite3_column_int(stmt, 3);
+		prod.precio = (int) sqlite3_column_int(stmt, 4);
+		prod.tamanyo = (char*) sqlite3_column_text(stmt, 5);
+	} else {
+		prod.id_prod = -1;
+	}
+
+	sqlite3_finalize(stmt);
+
+	return prod;
+}
 //int comprobarCiudad(int cod_ciu){
 //	int resultado = 0;
 //

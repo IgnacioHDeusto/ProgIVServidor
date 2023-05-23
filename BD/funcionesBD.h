@@ -1,3 +1,8 @@
+#include "../datos/Producto/Producto.h"
+#include "../datos/Producto/Categoria.h"
+#include "../datos/Pedido/Carrito.h"
+#include "../datos/Pedido/Pedido.h"
+
 #ifndef FUNCIONES_FUNCIONESBD_H_
 #define FUNCIONES_FUNCIONESBD_H_
 
@@ -25,9 +30,12 @@
 	int comprobarUsuario(char* usuario, char* contrasena);
 
 	void MostrarTrabajadores();
-//
-//	void ListaProductos();
-//
+
+	void ListaProductos();
+
+	int nProductos();
+
+	Producto* Productos();
 //	void BorrarProducto(int id);
 //
 //	void insertarAlmacen(Almacen al);
@@ -62,13 +70,13 @@
 //	//void crearProducto(char* nombre, char* descripcion, int categoria, int precio, char* tamanyo);
 //	void editarPrecio(int id_prod, int precio);
 //
-//	void insertarCliente(Cliente clt);
+	void insertarCliente(char *, char *, char*, int, int, char *);
 //
 //	void MostrarClientes();
 //
 //	int comprobarAlmacen(int id_alm);
 //
-//	int comprobarProducto(int id_prod);
+Producto comprobarProducto(int id_prod);
 //
 //	int comprobarCiudad(int cod_ciu);
 //
