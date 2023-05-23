@@ -21,7 +21,9 @@
 //	void crearProducto(Producto p);
 //
 //	int comprobarUsuario(char* usuario, char* contrasena);
-//
+
+	int comprobarUsuario(char* usuario, char* contrasena);
+
 	void MostrarTrabajadores();
 //
 //	void ListaProductos();

@@ -1,14 +1,12 @@
-#include <string.h>
-#include "BD/funcionesBD.h"
-#include "sqlite/sqlite3.h"
 #include <stdio.h>
 #include <winsock2.h>
-
+#include "math.h"
+#include "BD/funcionesBD.h"
+#include "string.h"
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000
 
-
-int main(void){
+int main(){
 		WSADATA wsaData;
 		SOCKET conn_socket;
 		SOCKET comm_socket;
@@ -78,20 +76,33 @@ int main(void){
 
 		iniciarBD();
 		do {
-			int bytes = recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			if (bytes > 0) {
-				printf("Receiving message... \n");
-				printf("Data received: %s \n", recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			printf("Command received: %s \n", recvBuff);
+			fflush(stdout);
 
-				printf("Sending reply... \n");
-				strcpy(sendBuff, "ACK -> ");
-				strcat(sendBuff, recvBuff);
+			if (strcmp(recvBuff, "ComprobarCliente") == 0){
+				char dni[10];
+				char contrasena[30];
+				int comprueba;
+
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				strcpy(dni, recvBuff);
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				strcpy(contrasena, recvBuff);
+
+				comprueba = comprobarUsuario(dni, contrasena);
+				if (comprueba == 1) {
+					strcpy(recvBuff, "La contraseña es correcta");
+					sprintf(sendBuff, "La contraseña es correcta");
+				} else {
+					strcpy(recvBuff, "La contraseña es incorrecta");
+					sprintf(sendBuff, "La contraseña es incorrecta");
+				}
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				printf("Data sent: %s \n", sendBuff);
-
-				if (strcmp(recvBuff, "Bye") == 0)
-					break;
+				printf("Response sent: %s \n", sendBuff);
+				fflush(stdout);
 			}
+
 		} while (1);
 
 		// CLOSING the sockets and cleaning Winsock...

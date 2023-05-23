@@ -575,6 +575,29 @@ void MostrarTrabajadores() {
 //
 //    return resultado;
 //}
+
+int comprobarUsuario(char usuario[], char contrasena[]) {
+	int resultado = 0;
+
+	char sql[] = "SELECT * FROM CLIENTE WHERE DNI_clt = ? AND Contrasena_clt = ?";
+
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+	sqlite3_bind_text(stmt, 1, usuario, strlen(usuario), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 2, contrasena, strlen(contrasena), SQLITE_STATIC);
+
+	result = sqlite3_step(stmt);
+
+	if(result == SQLITE_ROW) {
+		resultado = 1;
+	} else {
+		resultado = 0;
+	}
+
+    sqlite3_finalize(stmt);
+
+    return resultado;
+}
+
 //
 //
 //int comprobarStock(int id_prod, int id_alm) {
