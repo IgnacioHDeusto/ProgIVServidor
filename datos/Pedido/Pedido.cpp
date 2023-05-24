@@ -24,3 +24,7 @@ Pedido::~Pedido() {
 	delete fecha;
 	delete dni;
 }
+void Pedido::imprimirPedido ()
+{
+    cout << "Pedido -> Nº: "<< this->n_ped <<" FECHA: "<< this->fecha << endl;
+}

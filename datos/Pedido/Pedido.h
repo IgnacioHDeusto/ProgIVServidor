@@ -17,6 +17,7 @@ public:
 	Pedido();
 	Pedido(int, char *, char *);
 	virtual ~Pedido();
+	void imprimirPedido();
 };
 
 #endif /* DATOS_PEDIDO_PEDIDO_H_ */

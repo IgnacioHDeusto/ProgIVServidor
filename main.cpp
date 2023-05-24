@@ -13,6 +13,13 @@ using namespace std;
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000
 
+void mensajeLog1(char* msg) {
+    FILE* f;
+    f = fopen("log.txt","a");
+    fprintf(f, "%s\n", msg);
+    fclose(f);
+}
+
 int main(){
 		WSADATA wsaData;
 		SOCKET conn_socket;
@@ -129,6 +136,8 @@ int main(){
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 						printf("Response sent: %s \n", sendBuff);
 						fflush(stdout);
+						char* mensaje = "Registro Exitoso";
+						mensajeLog1(mensaje);
 
 					} else {
 						strcpy(recvBuff, "RegistroM");
@@ -136,6 +145,7 @@ int main(){
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 						printf("Response sent: %s \n", sendBuff);
 						fflush(stdout);
+
 					}
 
 				}
@@ -156,6 +166,8 @@ int main(){
 				if (comprueba == 1) {
 					strcpy(recvBuff, "Usuario OK");
 					sprintf(sendBuff, "Usuario Correcto");
+					char* mensaje = "Inicio de sesion Exitoso";
+					mensajeLog1(mensaje);
 				} else {
 					strcpy(recvBuff, "Usuario MAL");
 					sprintf(sendBuff, "Usuario Incorrecto");
@@ -203,58 +215,46 @@ int main(){
 				strcpy(sendBuff, "Producto anadido");
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 				printf("Response sent: PA \n");
-
+				char* mensaje = "Producto añadido";
+				mensajeLog1(mensaje);
 				fflush(stdout);
 
 
 			}
 			if (strcmp(recvBuff, "MostrarPedidos") == 0){
-				int tam = nProductos();
-				Producto** productos = new Producto*[tam];
-				productos = Productos();
+				char dni[10];
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				strcpy(dni, recvBuff);
+				int tam = nPedidos(dni);
+				Pedido** pedidos = new Pedido*[tam];
+				pedidos = Pedidos(dni);
 
 				int i;
-				for (i = 0; i < tam - 1; i++) {
-					sprintf(sendBuff, "%d", productos[i]->id_prod);
+				for (i = 0; i < tam; i++) {
+					sprintf(sendBuff, "%d", pedidos[i]->n_ped);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i]->nombre);
+					strcpy(sendBuff, pedidos[i]->fecha);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i]->descripcion);
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					sprintf(sendBuff, "%d", productos[i]->cod_cat);
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					sprintf(sendBuff, "%d", productos[i]->precio);
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i]->tamanyo);
+					strcpy(sendBuff, pedidos[i]->dni);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 				}
 				fflush(stdout);
 				strcpy(sendBuff, "FIN");
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				printf("Response sent: %d pedidos \n", tam - 1);
+				printf("Response sent: %d pedidos \n", tam);
 				fflush(stdout);
 			}
-			if (strcmp(recvBuff, "BorrarProductoCarrito") == 0){
-				int id;
+			if (strcmp(recvBuff, "EnviarCarrito") == 0){
+				Pedido p;
+				char dni[10];
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-				id= atoi(recvBuff);
-				if (id == -1) {
-				strcpy(sendBuff, "NO EXISTE PROD");
-				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				    } else {
-			    Producto prod = comprobarProducto(id);
-				carrito.EliminarProd(id);
-				strcpy(sendBuff, "Producto eliminado");
-			    send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				printf("Response sent: PA \n");
-				fflush(stdout);
-				     }
-			}
-			if (strcmp(recvBuff, "ConfirmarCarrito") == 0){
-
+				strcpy(dni, recvBuff);
+				p.dni = dni;
+				insertarPedido();
+				insertarCompraProd(id_prod, n_ped, 1);
 			}
 			if (strcmp(recvBuff, "EXIT") == 0)
-						break;
+				break;
 
 		} while (1);
 

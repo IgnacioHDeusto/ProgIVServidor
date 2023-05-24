@@ -156,61 +156,44 @@ void insertarCliente(char dni[], char nom[] , char dir[], int tlf, int cod_ciu, 
 	}
 	        sqlite3_finalize(stmt);
 	}
-//
-//void insertarPedido(Pedido ped){
-//	    char error = 0;
-//	    int rc;
-//
-//	    char query[400];
-//	    char* fecha = fechaToChar(ped.fecha);
-//	    sprintf(query, "INSERT INTO PEDIDO ( N_PEDIDO, Fecha, DNI_clt) VALUES (NULL, '%s', '%s')", fecha, ped.dni);
-//
-//	    rc = sqlite3_exec(db, query, 0, 0, &error);
-//
-//	    if (rc == SQLITE_OK) {
-//	    printf("Pedido insertado correctamente\n");
-//	        } else {
-//	        printf("Error al insertar el almacen: %s\n", error);
-//	                }
-//
-//
-//	        sqlite3_finalize(stmt);
-//}
-//
-//void insertarCompraProd(CompraProducto cp) {
-//    char error = 0;
-//    int rc;
-//
-//    char query[400];
-//    sprintf(query, "INSERT INTO COMPRA_PRDCT ( ID_prod, N_PEDIDO, Cantidad) VALUES ('%i', '%i', '%i')", cp.id_producto, cp.n_pedido, cp.cant);
-//
-//    rc = sqlite3_exec(db, query, 0, 0, &error);
-//
-//    if (rc == SQLITE_OK) {
-//    printf("Compra de producto insertado correctamente\n");
-//        } else {
-//        printf("Error al insertar el compra de producto: %s\n", error);
-//                }
-//        sqlite3_finalize(stmt);
-//}
-//void crearGestor(Trabajador t) {
-//	char* error = 0;
-//	int rc;
-//
-//	char query[400];
-//	sprintf(query, "INSERT INTO TRABAJADOR ( Cod_trab, Usuario_trab, Contrasena_trab) VALUES (NULL, '%s', '%s')", t.Nombre_trab, t.Contrasena_trab);
-//
-//	rc = sqlite3_exec(db, query, 0, 0, &error);
-//
-//	if (rc == SQLITE_OK) {
-//		printf("Trabajador insertado correctamente\n");
-//	} else {
-//		printf("Error al insertar trabajador: %s\n", error);
-//	}
-//
-//	sqlite3_finalize(stmt);
-//}
-//
+
+void insertarPedido(Pedido ped){
+	    char error = 0;
+	    int rc;
+
+	    char query[400];
+	    char* fecha = fechaToChar(ped.fecha);
+	    sprintf(query, "INSERT INTO PEDIDO ( N_PEDIDO, Fecha, DNI_clt) VALUES (NULL, '%s', '%s')", fecha, ped.dni);
+
+	    rc = sqlite3_exec(db, query, 0, 0, &error);
+
+	    if (rc == SQLITE_OK) {
+	    printf("Pedido insertado correctamente\n");
+	        } else {
+	        printf("Error al insertar el almacen: %s\n", error);
+	                }
+
+
+	        sqlite3_finalize(stmt);
+}
+
+void insertarCompraProd(int id_prod, int n_ped, int cant) {
+    char error = 0;
+    int rc;
+
+    char query[400];
+    sprintf(query, "INSERT INTO COMPRA_PRDCT ( ID_prod, N_PEDIDO, Cantidad) VALUES ('%i', '%i', '%i')", id_prod, n_ped, cant);
+
+    rc = sqlite3_exec(db, query, 0, 0, &error);
+
+    if (rc == SQLITE_OK) {
+    printf("Compra de producto insertado correctamente\n");
+        } else {
+        printf("Error al insertar el compra de producto: %s\n", error);
+                }
+        sqlite3_finalize(stmt);
+}
+
 //void crearProducto(Producto p){
 //	char* error = 0;
 //		 	int rc;
@@ -275,10 +258,11 @@ void MostrarTrabajadores() {
 //        sqlite3_finalize(stmt);
 //}
 //
-int nPedidos(char dni[10]) {
-		char sql[] = "select * from PEDIDO WHERE DNI";
+int nPedidos(char dni[]) {
+		char sql[] = "select * from PEDIDO WHERE DNI_clt = ?";
 		int cont;
 		cont = 0;
+		sqlite3_bind_text(stmt, 1, dni, strlen(dni), SQLITE_STATIC);
 		sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
 
 		do {
@@ -290,6 +274,32 @@ int nPedidos(char dni[10]) {
 
 		sqlite3_finalize(stmt);
 		return cont;
+}
+
+Pedido** Pedidos(char dni[]) {
+		int nped = nPedidos(dni);
+		Pedido** peds = (Pedido**) malloc(sizeof(Pedido*) * (nped + 1));
+		char sql[] = "select * from PRODUCTO";
+		sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+
+			result = sqlite3_step(stmt) ;
+
+			int i;
+			for(i = 0; i < nped + 1; i++){
+			result = sqlite3_step(stmt);
+			if (result == SQLITE_ROW){
+					int n_ped = sqlite3_column_int(stmt, 0);
+					char * fecha = (char*) sqlite3_column_text(stmt, 1);
+					char * dni_clt = (char*) sqlite3_column_text(stmt, 2);
+
+					Pedido* pedido = new Pedido(n_ped, fecha, dni_clt);
+
+					peds[i] = pedido;
+
+				}
+			}
+			sqlite3_finalize(stmt);
+			return peds;
 }
 int nProductos() {
 		char sql[] = "select * from PRODUCTO";

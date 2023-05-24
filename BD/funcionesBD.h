@@ -37,6 +37,10 @@
 
 	Producto** Productos();
 
+	int nPedidos(char dni[]);
+
+	Pedido** Pedidos(char dni[]);
+
 	int UsuarioExiste(char * usuario);
 
 //	void BorrarProducto(int id);
@@ -55,7 +59,9 @@
 //
 //	void ConsultarStock();
 //
-//	void insertarPedido(Pedido ped);
+	void insertarPedido(Pedido ped);
+
+	void insertarCompraProd(int id_prod, int n_ped, int cant);
 //
 //	void listaPedidos();
 //
@@ -79,7 +85,7 @@
 //
 //	int comprobarAlmacen(int id_alm);
 //
-Producto comprobarProducto(int id_prod);
+	Producto comprobarProducto(int id_prod);
 //
 //	int comprobarCiudad(int cod_ciu);
 //
