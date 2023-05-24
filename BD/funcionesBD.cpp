@@ -311,18 +311,24 @@ Producto* Productos() {
 		int nprod = nProductos();
 		Producto* prods = new Producto[nprod];
 		char sql[] = "select * from PRODUCTO";
-
+			int cont = 0;
 			sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
 
 			do {
 				result = sqlite3_step(stmt) ;
 				if (result == SQLITE_ROW) {
 
+					prods[cont].id_prod = (int) sqlite3_column_int(stmt, 0);
+					prods[cont].nombre = (char*) sqlite3_column_text(stmt, 1);
+					prods[cont].descripcion = (char*) sqlite3_column_text(stmt, 2);
+					prods[cont].cod_cat = (int) sqlite3_column_int(stmt, 3);
+					prods[cont].precio = (int) sqlite3_column_int(stmt, 4);
+					prods[cont].tamanyo = (char*) sqlite3_column_text(stmt, 5);
+					cont++;
 				}
 			} while (result == SQLITE_ROW);
-
-			sqlite3_finalize(stmt);
 			return prods;
+			sqlite3_finalize(stmt);
 }
 
 //void ListaAlmacenes() {

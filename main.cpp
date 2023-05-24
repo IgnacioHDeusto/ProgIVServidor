@@ -112,10 +112,10 @@ int main(){
 				strcpy(contrasena, recvBuff);
 
 				UExiste = UsuarioExiste(dni);
-				cout << UExiste << endl;
 				fflush(stdout);
 				if (UExiste == 1) {
 					strcpy(recvBuff, "UsuarioE");
+					sprintf(sendBuff, "UsuarioE");
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 					printf("Response sent: %s \n", sendBuff);
 					fflush(stdout);
@@ -124,12 +124,15 @@ int main(){
 
 					UExiste = UsuarioExiste(dni);
 					if (UExiste == 1) {
-						strcpy(recvBuff, "RegistroM");
+						strcpy(recvBuff, "RegistroE");
+						sprintf(sendBuff, "RegistroE");
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 						printf("Response sent: %s \n", sendBuff);
 						fflush(stdout);
+
 					} else {
-						strcpy(recvBuff, "RegistroE");
+						strcpy(recvBuff, "RegistroM");
+						sprintf(sendBuff, "RegistroM");
 						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 						printf("Response sent: %s \n", sendBuff);
 						fflush(stdout);
@@ -166,8 +169,7 @@ int main(){
 				Producto* productos = new Producto[tam];
 
 				productos = Productos();
-
-				for (int i = 0; i < tam; ++i) {
+				for (int i = 0; i < tam; i++) {
 					sprintf(sendBuff, "%d", productos[i].id_prod);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 					strcpy(sendBuff, productos[i].nombre);
@@ -192,6 +194,7 @@ int main(){
 				}
 			}
 			if (strcmp(recvBuff, "AnadirProducto") == 0){
+
 				int id;
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				id= atoi(recvBuff);
@@ -201,6 +204,8 @@ int main(){
 				} else {
 					Producto prod = comprobarProducto(id);
 					carrito.AnadirProd(prod);
+					cout << carrito.numProductos << endl;
+					cout << carrito.productos << endl;
 					strcpy(sendBuff, "Producto anadido");
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 					printf("Response sent: PA \n");
@@ -208,6 +213,19 @@ int main(){
 				}
 
 
+			}
+
+			if (strcmp(recvBuff, "MostrarProductos") == 0) {
+				int tam = nProductos();
+				cout << tam;
+				Producto * productos = Productos();
+
+				fflush(stdout);
+				for (int i = 0; i < tam; ++i) {
+					cout << productos[i].id_prod
+					printf("Producto -> ID: %i --> (%i€) %s\n", productos[i].id_prod, productos[i].precio, productos[i].nombre);
+					fflush(stdout);
+				}
 			}
 			if (strcmp(recvBuff, "MostrarCarrito") == 0){
 
