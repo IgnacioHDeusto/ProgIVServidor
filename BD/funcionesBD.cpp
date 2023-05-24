@@ -158,11 +158,11 @@ void insertarCliente(char dni[], char nom[] , char dir[], int tlf, int cod_ciu, 
 	}
 
 void insertarPedido(Pedido ped){
-	    char error = 0;
+	    char* error = 0;
 	    int rc;
 
 	    char query[400];
-	    char* fecha = fechaToChar(ped.fecha);
+	    char* fecha = ped.fecha;
 	    sprintf(query, "INSERT INTO PEDIDO ( N_PEDIDO, Fecha, DNI_clt) VALUES (NULL, '%s', '%s')", fecha, ped.dni);
 
 	    rc = sqlite3_exec(db, query, 0, 0, &error);
@@ -178,7 +178,7 @@ void insertarPedido(Pedido ped){
 }
 
 void insertarCompraProd(int id_prod, int n_ped, int cant) {
-    char error = 0;
+    char* error = 0;
     int rc;
 
     char query[400];

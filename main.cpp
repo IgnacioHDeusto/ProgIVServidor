@@ -250,8 +250,14 @@ int main(){
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				strcpy(dni, recvBuff);
 				p.dni = dni;
-				insertarPedido();
-				insertarCompraProd(id_prod, n_ped, 1);
+				p.fecha = "24/05/2023";
+				p.n_ped = 7;
+				insertarPedido(p);
+				for (int i = 0; i < carrito.numProductos ; ++i) {
+					insertarCompraProd(carrito.productos[i].id_prod, p.n_ped, 1);
+				}
+				carrito = Carrito(30);
+				printf("Response sent: Pedido creado \n");
 			}
 			if (strcmp(recvBuff, "EXIT") == 0)
 				break;

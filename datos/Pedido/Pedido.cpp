@@ -4,14 +4,12 @@
 using namespace std;
 
 Pedido::Pedido() {
-	cout << "Constructor Pedido" << endl;
 	this->n_ped = NULL;
 	this->dni = NULL;
 	this->fecha = NULL;
 }
 
 Pedido::Pedido(int n_ped, char* fecha, char* dni) {
-	cout << "Constructor Pedido" << endl;
 	this->n_ped = n_ped;
 	this->fecha = new char[strlen(fecha) + 1];
 	strcpy(this->fecha, fecha);
@@ -20,7 +18,6 @@ Pedido::Pedido(int n_ped, char* fecha, char* dni) {
 }
 
 Pedido::~Pedido() {
-	cout << "Destructor Pedido" << endl;
 	delete fecha;
 	delete dni;
 }
