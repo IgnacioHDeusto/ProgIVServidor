@@ -9,10 +9,9 @@
 #define DATOS_PRODUCTO_CATEGORIA_H_
 
 class Categoria {
-protected:
+public:
 	int cod_cat;
 	char* nombre;
-public:
 	Categoria();
 	Categoria(int, char*);
 	virtual ~Categoria();

@@ -1,11 +1,9 @@
 #include "Carrito.h"
-#include "Pedido.h"
 #include <string.h>
 #include <iostream>
 using namespace std;
 
 Carrito::Carrito() {
-	cout << "Constructor Carrito" << endl;
 	this->numProductos = 0;
 	this->productos = NULL;
 }
@@ -16,7 +14,6 @@ Carrito::Carrito(Producto * productos, int numProd){
 }
 
 Carrito::~Carrito() {
-	cout << "Destructor Carrito" << endl;
 	delete productos;
 }
 

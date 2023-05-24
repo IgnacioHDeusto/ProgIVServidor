@@ -96,6 +96,8 @@ int main(){
 				int cod_ciu;
 				char contrasena[30];
 
+				int UExiste;
+
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				strcpy(dni, recvBuff);
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
@@ -109,11 +111,32 @@ int main(){
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				strcpy(contrasena, recvBuff);
 
-				insertarCliente(dni, nombre, dir, tlf, cod_ciu, contrasena);
-				strcpy(recvBuff, "Registro exitoso");
-				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				printf("Response sent: %s \n", sendBuff);
+				UExiste = UsuarioExiste(dni);
+				cout << UExiste << endl;
 				fflush(stdout);
+				if (UExiste == 1) {
+					strcpy(recvBuff, "UsuarioE");
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+					printf("Response sent: %s \n", sendBuff);
+					fflush(stdout);
+				} else {
+					insertarCliente(dni, nombre, dir, tlf, cod_ciu, contrasena);
+
+					UExiste = UsuarioExiste(dni);
+					if (UExiste == 1) {
+						strcpy(recvBuff, "RegistroM");
+						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+						printf("Response sent: %s \n", sendBuff);
+						fflush(stdout);
+					} else {
+						strcpy(recvBuff, "RegistroE");
+						send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+						printf("Response sent: %s \n", sendBuff);
+						fflush(stdout);
+					}
+
+				}
+
 			}
 
 			if (strcmp(recvBuff, "ComprobarCliente") == 0){
@@ -128,34 +151,34 @@ int main(){
 
 				comprueba = comprobarUsuario(dni, contrasena);
 				if (comprueba == 1) {
-					strcpy(recvBuff, "Contraseña OK");
-					sprintf(sendBuff, "La contraseña es correcta");
+					strcpy(recvBuff, "Usuario OK");
+					sprintf(sendBuff, "Usuario Correcto");
 				} else {
-					strcpy(recvBuff, "Contraseña MAL");
-					sprintf(sendBuff, "La contraseña es incorrecta");
+					strcpy(recvBuff, "Usuario MAL");
+					sprintf(sendBuff, "Usuario Incorrecto");
 				}
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 				printf("Response sent: %s \n", sendBuff);
 				fflush(stdout);
 			}
 			if (strcmp(recvBuff, "MostrarProductos") == 0){
-				int tam = ListaProductos();
-				Producto** productos = new Producto*[tam];
+				int tam = nProductos();
+				Producto* productos = new Producto[tam];
 
 				productos = Productos();
 
 				for (int i = 0; i < tam; ++i) {
-					sprintf(sendBuff, "%d", productos[i]->id_prod);
+					sprintf(sendBuff, "%d", productos[i].id_prod);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i]->nombre);
+					strcpy(sendBuff, productos[i].nombre);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i]->descripcion);
+					strcpy(sendBuff, productos[i].descripcion);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					sprintf(sendBuff, "%d", productos[i]->cod_cat);
+					sprintf(sendBuff, "%d", productos[i].cod_cat);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					sprintf(sendBuff, "%d", productos[i]->precio);
+					sprintf(sendBuff, "%d", productos[i].precio);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i]->tamanyo);
+					strcpy(sendBuff, productos[i].tamanyo);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 				}
 				if (tam == 0) {

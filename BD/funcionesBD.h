@@ -1,6 +1,6 @@
 #include "../datos/Producto/Producto.h"
 #include "../datos/Producto/Categoria.h"
-#include "../datos/Pedido/Carrito.h"
+#include "../datos/Producto/Carrito.h"
 #include "../datos/Pedido/Pedido.h"
 
 #ifndef FUNCIONES_FUNCIONESBD_H_
@@ -36,6 +36,9 @@
 	int nProductos();
 
 	Producto* Productos();
+
+	int UsuarioExiste(char * usuario);
+
 //	void BorrarProducto(int id);
 //
 //	void insertarAlmacen(Almacen al);

@@ -3,10 +3,9 @@
 #include "Producto.h"
 
 class Carrito {
-protected:
+public:
 	Producto * productos;
 	int numProductos;
-public:
 	Carrito();
 	Carrito(Producto* , int);
 	virtual ~Carrito();

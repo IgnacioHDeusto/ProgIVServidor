@@ -4,7 +4,6 @@
 using namespace std;
 
 Producto::Producto() {
-	cout << "Constructor Producto" << endl;
 	this->cod_cat = NULL;
 	this->descripcion = NULL;
 	this->id_prod = NULL;
@@ -26,7 +25,6 @@ Producto::Producto(int cod_cat, char* desc, char* nom, int id_prod, int precio, 
 }
 
 Producto::~Producto() {
-	cout << "Destructor Producto" << endl;
 	delete descripcion;
 	delete nombre;
 	delete tamanyo;

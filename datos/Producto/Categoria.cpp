@@ -4,7 +4,6 @@
 using namespace std;
 
 Categoria::Categoria() {
-	cout << "Constructor Categoria" << endl;
 	this->cod_cat = NULL;
 	this->nombre = NULL;
 
@@ -17,7 +16,6 @@ Categoria::Categoria(int cod_cat, char* nombre){
 }
 
 Categoria::~Categoria() {
-	cout << "Destructor Categoria" << endl;
 	delete nombre;
 }
 

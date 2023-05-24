@@ -1,5 +1,5 @@
 #include "funcionesBD.h"
-#include <string.h>
+#include "string.h"
 #include "../sqlite/sqlite3.h"
 #include <iostream>
 using namespace std;
@@ -55,7 +55,6 @@ void iniciarBD(){
 	char* ruta = load_config("ficheros/Config.txt","ruta");
 
     sqlite3_open(ruta, &db);
-    MostrarTrabajadores();
     free(ruta);
 
 }
@@ -631,6 +630,26 @@ int comprobarUsuario(char usuario[], char contrasena[]) {
     return resultado;
 }
 
+int UsuarioExiste(char usuario[]) {
+	int resultado = 0;
+
+	char sql[] = "SELECT * FROM CLIENTE WHERE DNI_clt = ?";
+
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+	sqlite3_bind_text(stmt, 1, usuario, strlen(usuario), SQLITE_STATIC);
+
+	result = sqlite3_step(stmt);
+
+	if(result == SQLITE_ROW) {
+		resultado = 1;
+	} else {
+		resultado = 0;
+	}
+
+    sqlite3_finalize(stmt);
+
+    return resultado;
+}
 //
 //
 //int comprobarStock(int id_prod, int id_alm) {
