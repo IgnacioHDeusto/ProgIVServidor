@@ -4,15 +4,13 @@
 
 class Carrito {
 public:
-	Producto * productos;
+	Producto* productos;
 	int numProductos;
 	Carrito();
-	Carrito(Producto* , int);
+	Carrito(int);
 	virtual ~Carrito();
-	void AnadirProd(Producto p);
-	Producto* EliminarProd(int id);
-	void imprimirProducto (Producto p);
-	void imprimirCarrito(Carrito c);
+	void EliminarProd(int id);
+	void imprimirCarrito();
 };
 
 #endif /* DATOS_PEDIDO_CARRITO_H_ */

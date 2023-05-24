@@ -9,11 +9,11 @@
 #define DATOS_PEDIDO_PEDIDO_H_
 
 class Pedido {
-protected:
+
+public:
 	int n_ped;
 	char* fecha;
 	char* dni;
-public:
 	Pedido();
 	Pedido(int, char *, char *);
 	virtual ~Pedido();

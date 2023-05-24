@@ -275,21 +275,21 @@ void MostrarTrabajadores() {
 //        sqlite3_finalize(stmt);
 //}
 //
-void ListaProductos() {
-		char sql[] = "select * from PRODUCTO";
+int nPedidos(char dni[10]) {
+		char sql[] = "select * from PEDIDO WHERE DNI";
+		int cont;
+		cont = 0;
+		sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
 
-			sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
-			printf("\n");
-			printf("Mostrando Productos:\n");
+		do {
+			result = sqlite3_step(stmt) ;
+			if (result == SQLITE_ROW) {
+				cont++;
+			}
+		} while (result == SQLITE_ROW);
 
-			do {
-				result = sqlite3_step(stmt) ;
-				if (result == SQLITE_ROW) {
-					printf("Producto -> ID: %i --> (%i€) %s\n", (int) sqlite3_column_int(stmt, 0),(int) sqlite3_column_int(stmt, 4), (char*) sqlite3_column_text(stmt, 1));
-				}
-			} while (result == SQLITE_ROW);
-
-			sqlite3_finalize(stmt);
+		sqlite3_finalize(stmt);
+		return cont;
 }
 int nProductos() {
 		char sql[] = "select * from PRODUCTO";
@@ -307,28 +307,34 @@ int nProductos() {
 		sqlite3_finalize(stmt);
 		return cont;
 }
-Producto* Productos() {
+
+Producto** Productos() {
 		int nprod = nProductos();
-		Producto* prods = new Producto[nprod];
+		Producto** prods = (Producto**) malloc(sizeof(Producto*) * (nprod + 1));
 		char sql[] = "select * from PRODUCTO";
-			int cont = 0;
-			sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
+		sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
 
-			do {
-				result = sqlite3_step(stmt) ;
-				if (result == SQLITE_ROW) {
+			result = sqlite3_step(stmt) ;
 
-					prods[cont].id_prod = (int) sqlite3_column_int(stmt, 0);
-					prods[cont].nombre = (char*) sqlite3_column_text(stmt, 1);
-					prods[cont].descripcion = (char*) sqlite3_column_text(stmt, 2);
-					prods[cont].cod_cat = (int) sqlite3_column_int(stmt, 3);
-					prods[cont].precio = (int) sqlite3_column_int(stmt, 4);
-					prods[cont].tamanyo = (char*) sqlite3_column_text(stmt, 5);
-					cont++;
+			int i;
+			for(i = 0; i < nprod + 1; i++){
+			result = sqlite3_step(stmt);
+			if (result == SQLITE_ROW){
+					int codigo = sqlite3_column_int(stmt, 0);
+					char * nombre = (char*) sqlite3_column_text(stmt, 1);
+					char * desc = (char*) sqlite3_column_text(stmt, 2);
+					int cod_cat = sqlite3_column_int(stmt, 3);
+					int precio = sqlite3_column_int(stmt, 4);
+					char * tamanyo = (char*) sqlite3_column_text(stmt, 5);
+
+					Producto* producto = new Producto(codigo, nombre, desc, cod_cat, precio, tamanyo);
+
+					prods[i] = producto;
+
 				}
-			} while (result == SQLITE_ROW);
-			return prods;
+			}
 			sqlite3_finalize(stmt);
+			return prods;
 }
 
 //void ListaAlmacenes() {
@@ -722,7 +728,6 @@ int UsuarioExiste(char usuario[]) {
 //}
 Producto comprobarProducto(int id_prod){
 	Producto prod;
-
 	char sql[] = "SELECT * FROM PRODUCTO WHERE ID_prod = ?";
 
 	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL) ;
@@ -740,10 +745,9 @@ Producto comprobarProducto(int id_prod){
 	} else {
 		prod.id_prod = -1;
 	}
-
 	sqlite3_finalize(stmt);
-
 	return prod;
+
 }
 //int comprobarCiudad(int cod_ciu){
 //	int resultado = 0;

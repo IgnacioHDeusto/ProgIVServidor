@@ -20,7 +20,7 @@ int main(){
 		struct sockaddr_in server;
 		struct sockaddr_in client;
 		char sendBuff[512], recvBuff[512];
-		Carrito carrito;
+		Carrito carrito(30);
 
 		printf("\nInitialising Winsock...\n");
 		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -166,71 +166,73 @@ int main(){
 			}
 			if (strcmp(recvBuff, "MostrarProductos") == 0){
 				int tam = nProductos();
-				Producto* productos = new Producto[tam];
-
+				Producto** productos = new Producto*[tam];
 				productos = Productos();
-				for (int i = 0; i < tam; i++) {
-					sprintf(sendBuff, "%d", productos[i].id_prod);
+
+				int i;
+				for (i = 0; i < tam - 1; i++) {
+					sprintf(sendBuff, "%d", productos[i]->id_prod);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i].nombre);
+					strcpy(sendBuff, productos[i]->nombre);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i].descripcion);
+					strcpy(sendBuff, productos[i]->descripcion);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					sprintf(sendBuff, "%d", productos[i].cod_cat);
+					sprintf(sendBuff, "%d", productos[i]->cod_cat);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					sprintf(sendBuff, "%d", productos[i].precio);
+					sprintf(sendBuff, "%d", productos[i]->precio);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					strcpy(sendBuff, productos[i].tamanyo);
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				}
-				if (tam == 0) {
-					strcpy(sendBuff, "TAMANYO 0");
+					strcpy(sendBuff, productos[i]->tamanyo);
 					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 				}
-				if (tam != 0) {
-					strcpy(sendBuff, "TAMANYO > 0");
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					printf("Response sent: %d productos \n", tam);
-				}
+				fflush(stdout);
+				strcpy(sendBuff, "FIN");
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				printf("Response sent: %d productos \n", tam - 1);
+				fflush(stdout);
 			}
 			if (strcmp(recvBuff, "AnadirProducto") == 0){
 
 				int id;
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				id= atoi(recvBuff);
-				if (id == -1) {
-					strcpy(sendBuff, "NO EXISTE PROD");
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-				} else {
-					Producto prod = comprobarProducto(id);
-					carrito.AnadirProd(prod);
-					cout << carrito.numProductos << endl;
-					cout << carrito.productos << endl;
-					strcpy(sendBuff, "Producto anadido");
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-					printf("Response sent: PA \n");
-					fflush(stdout);
-				}
 
-
-			}
-
-			if (strcmp(recvBuff, "MostrarProductos") == 0) {
-				int tam = nProductos();
-				cout << tam;
-				Producto * productos = Productos();
+				Producto prod = comprobarProducto(id);
+				fflush(stdout);
+				carrito.numProductos++;
+				carrito.productos[carrito.numProductos] = prod;
+				strcpy(sendBuff, "Producto anadido");
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				printf("Response sent: PA \n");
 
 				fflush(stdout);
-				for (int i = 0; i < tam; ++i) {
-					printf("Producto -> ID: %i --> (%i€) %s\n", productos[i].id_prod, productos[i].precio, productos[i].nombre);
-					fflush(stdout);
-				}
-			}
-			if (strcmp(recvBuff, "MostrarCarrito") == 0){
+
 
 			}
 			if (strcmp(recvBuff, "MostrarPedidos") == 0){
+				int tam = nProductos();
+				Producto** productos = new Producto*[tam];
+				productos = Productos();
 
+				int i;
+				for (i = 0; i < tam - 1; i++) {
+					sprintf(sendBuff, "%d", productos[i]->id_prod);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+					strcpy(sendBuff, productos[i]->nombre);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+					strcpy(sendBuff, productos[i]->descripcion);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+					sprintf(sendBuff, "%d", productos[i]->cod_cat);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+					sprintf(sendBuff, "%d", productos[i]->precio);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+					strcpy(sendBuff, productos[i]->tamanyo);
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				}
+				fflush(stdout);
+				strcpy(sendBuff, "FIN");
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				printf("Response sent: %d pedidos \n", tam - 1);
+				fflush(stdout);
 			}
 			if (strcmp(recvBuff, "BorrarProductoCarrito") == 0){
 				int id;

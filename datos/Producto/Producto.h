@@ -19,6 +19,7 @@ public:
 	Producto();
 	Producto(int, char*, char*, int, int, char*);
 	virtual ~Producto();
+	void imprimirProducto ();
 };
 
 #endif /* DATOS_PRODUCTO_PRODUCTO_H_ */

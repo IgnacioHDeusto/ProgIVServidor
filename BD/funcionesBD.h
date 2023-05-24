@@ -35,7 +35,7 @@
 
 	int nProductos();
 
-	Producto* Productos();
+	Producto** Productos();
 
 	int UsuarioExiste(char * usuario);
 
