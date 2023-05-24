@@ -222,7 +222,6 @@ int main(){
 
 				fflush(stdout);
 				for (int i = 0; i < tam; ++i) {
-					cout << productos[i].id_prod
 					printf("Producto -> ID: %i --> (%i€) %s\n", productos[i].id_prod, productos[i].precio, productos[i].nombre);
 					fflush(stdout);
 				}
@@ -234,7 +233,20 @@ int main(){
 
 			}
 			if (strcmp(recvBuff, "BorrarProductoCarrito") == 0){
-
+				int id;
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				id= atoi(recvBuff);
+				if (id == -1) {
+				strcpy(sendBuff, "NO EXISTE PROD");
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				    } else {
+			    Producto prod = comprobarProducto(id);
+				carrito.EliminarProd(id);
+				strcpy(sendBuff, "Producto eliminado");
+			    send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				printf("Response sent: PA \n");
+				fflush(stdout);
+				     }
 			}
 			if (strcmp(recvBuff, "ConfirmarCarrito") == 0){
 
